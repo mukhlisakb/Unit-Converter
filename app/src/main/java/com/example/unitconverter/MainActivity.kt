@@ -7,8 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
 
     private val btnCelcius by lazy { findViewById<Button>(R.id.btn_celcius) }
     private val btnFahrenheit by lazy { findViewById<Button>(R.id.btn_fahrenheit) }
@@ -45,11 +48,46 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        observeInput()
+        observeOutput()
+
+        btnOne.setButtonClickListener("1")
+        btnTwo.setButtonClickListener("2")
+        btnThree.setButtonClickListener("3")
+
+        btnFour.setButtonClickListener("4")
+        btnFive.setButtonClickListener("5")
+        btnSix.setButtonClickListener("6")
+        btnPlus.setButtonClickListener("+")
+
+        btnSeven.setButtonClickListener("7")
+        btnEight.setButtonClickListener("8")
+        btnNine.setButtonClickListener("9")
+        btnMinus.setButtonClickListener("-")
+
+        btnZero.setButtonClickListener("0")
+        btnDot.setButtonClickListener(".")
+
+        btnClear.setOnClickListener{
+            viewModel.clearInput()
+        }
+
         btnSwap.setOnClickListener {
             animateInputIndicator()
+            viewModel.swicthInputUnit()
+            viewModel.resetInputAndOutput()
+        }
+
+        btnCount.setOnClickListener{
+            viewModel.convertUnit()
         }
     }
 
+    private fun observeInput() {
+        viewModel.input.observe(this) { input ->
+            tvInput.text = input
+        }
+    }
     private fun animateInputIndicator() {
         // Get Intitial Potition
         val initialY1 = btnCelcius.y
@@ -74,5 +112,17 @@ class MainActivity : AppCompatActivity() {
                 btnFahrenheit.y = initialY1
                 btnFahrenheit.alpha = 1f
             }
+    }
+
+    private fun Button.setButtonClickListener(value: String){
+        setOnClickListener {
+            viewModel.setInput(value)
+        }
+    }
+
+    private fun observeOutput() {
+        viewModel.output.observe(this) { output ->
+            tvOutput.text = output
+        }
     }
 }
